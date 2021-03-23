@@ -1,0 +1,86 @@
+---
+title: "R Notebook"
+author: airosado
+date: 7/6/20
+output: html_notebook
+---
+
+```{R}
+install.packages("GillespieSSA")
+```
+
+```{R}
+vignette("decaying_dimer", package = "GillespieSSA")
+```
+
+```{R}
+library(GillespieSSA)
+parms <- c(c1=1.0, c2=0.002,c3=0.5, c4=0.04)
+tf <- 10   # Final time
+simName <- "Decaying Dimerizing Rxn. Set"   #Name
+x0 <- c(s1=10000,s2=0,s3=0)
+
+#Defining state-change matrix
+nu <- matrix(c(-1,-2,+2,0,
+               0, 1,-1,-1,
+               0,0,0,1),
+             nrow=3,byrow=TRUE)
+#Defining propensity functions
+a <- c("c1*s1", "c2*s1*s1","c3*s2","c4*s2")
+
+#Running simulations with the Direct Method
+set.seed(1)
+out <- ssa(
+  x0 = x0,
+  a = a,
+  nu = nu,
+  parms = parms,
+  tf = tf,
+  method = ssa.d(),
+  simName = simName,
+  verbose = FALSE,
+  consoleInterval = 1
+)
+ssa.plot(out, show.title = TRUE, show.legend = TRUE)
+```
+
+```{R}
+# Linear chain system
+vignette("linear_chain", package = "GillespieSSA")
+```
+
+```{R Direct Method}
+library(GillespieSSA)
+parms <- c(c=1)   # rate parameter
+M <- 50   # number of chain reactions
+simName <- "Linear Chain System"   # simulation name
+tf <- 5   # final time
+
+#Defining initial state vector
+x0 <- c(1000, rep(0,M))
+names(x0) <- paste0("x",seq_len(M+1))
+
+#Defining state-change matrix
+nu <- matrix(rep(0,M*(M+1)), ncol = M)
+nu[cbind(seq_len(M),seq_len(M))] <- -1
+nu[cbind(seq_len(M)+1,seq_len(M))] <- 1
+
+#Define propensity functions
+a <- paste0("c*x", seq_len(M))
+
+
+#Running simulations with the direct method
+set.seed(1)
+out <- ssa(
+  x0 = x0,
+  a = a,
+  nu = nu,
+  parms = parms,
+  tf = tf,
+  method = ssa.d(),
+  simName = simName,
+  verbose = FALSE,
+  consoleInterval = 1
+)
+ssa.plot(out,show.title = TRUE, show.legend = TRUE)
+```

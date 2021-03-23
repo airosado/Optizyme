@@ -1,0 +1,277 @@
+---
+title: "R Notebook"
+author: airosado
+date: 7/7/20
+output: html_notebook
+---
+
+```{r}
+rainbow<-rainbow(5)
+NumberOfSteps<-100000
+#Defines the parameters for the reaction; defines the rate constants
+k1<-5487804
+kneg1<-25216
+ka<-27.0
+
+k2<-37384500
+kneg2<-2688.97
+kb<-2.71
+
+k3<-218796000
+kneg3<-19670.9
+kc<-20.79
+
+k4<-143244000
+kneg4<-85856.2
+kd<-90
+
+#Establishing the vectors for a system that has 1000 times as much S1 as each of the enzymes. The system can be scaled up to represent a macroscopic solution. Initialization of the system.
+
+NumberOfS1<-rep(0,NumberOfSteps)  # recall the replication function
+NumberOfS1[1]<-1000
+NumberOfS2<-rep(0,NumberOfSteps)
+NumberOfS2[1]<-0
+NumberOfS3<-rep(0,NumberOfSteps)
+NumberOfS3[1]<-0
+NumberOfS4<-rep(0,NumberOfSteps)
+NumberOfS4[1]<-0
+NumberOfS5<-rep(0,NumberOfSteps)
+NumberOfS5[1]<-0
+
+NumberOfE1<-rep(0,NumberOfSteps)
+NumberOfE1[1]<-10
+NumberOfE2<-rep(0,NumberOfSteps)
+NumberOfE2[1]<-50
+NumberOfE3<-rep(0,NumberOfSteps)
+NumberOfE3[1]<-10
+NumberOfE4<-rep(0,NumberOfSteps)
+NumberOfE4[1]<-10
+
+NumberOfES1<-rep(0,NumberOfSteps)
+NumberOfES1[1]<-0
+NumberOfES2<-rep(0,NumberOfSteps)
+NumberOfES2[1]<-0
+NumberOfES3<-rep(0,NumberOfSteps)
+NumberOfES3[1]<-0
+NumberOfES4<-rep(0,NumberOfSteps)
+NumberOfES4[1]<-0
+
+#The next step is to calculate the propensities for each of the reactions to occur. There are 12 reactions that can occur.
+H1<-rep(0,NumberOfSteps)
+H2<-rep(0,NumberOfSteps)
+H3<-rep(0,NumberOfSteps)
+H4<-rep(0,NumberOfSteps)
+H5<-rep(0,NumberOfSteps)
+H6<-rep(0,NumberOfSteps)
+H7<-rep(0,NumberOfSteps)
+H8<-rep(0,NumberOfSteps)
+H9<-rep(0,NumberOfSteps)
+H10<-rep(0,NumberOfSteps)
+H11<-rep(0,NumberOfSteps)
+H12<-rep(0,NumberOfSteps)
+
+C1<-k1/((6.022*10^23)*(1.66058*10^-21))
+C2<-kneg1
+C3<-ka
+C4<-k2/((6.022*10^23)*(1.66058*10^-21))
+C5<-kneg2
+C6<-kb
+C7<-k3/((6.022*10^23)*(1.66058*10^-21))
+C8<-kneg3
+C9<-kc
+C10<-k4/((6.022*10^23)*(1.66058*10^-21))
+C11<-kneg4
+C12<-kd
+
+A1<-rep(0,NumberOfSteps)
+A2<-rep(0,NumberOfSteps)
+A3<-rep(0,NumberOfSteps)
+A4<-rep(0,NumberOfSteps)
+A5<-rep(0,NumberOfSteps)
+A6<-rep(0,NumberOfSteps)
+A7<-rep(0,NumberOfSteps)
+A8<-rep(0,NumberOfSteps)
+A9<-rep(0,NumberOfSteps)
+A10<-rep(0,NumberOfSteps)
+A11<-rep(0,NumberOfSteps)
+A12<-rep(0,NumberOfSteps)
+
+A0<-rep(0,NumberOfSteps)  # what the hell
+MCTime<-rep(0,NumberOfSteps)   # what the hell, patrick
+MCTime[1]<-0   # patrick, what are you doing, sir
+MCCounter<-0  #patrick, my good lad, what the hell is going on here
+
+repeat{
+  MCCounter<-MCCounter+1
+
+  H1[MCCounter]<-NumberOfS1[MCCounter]*NumberOfE1[MCCounter]
+  H2[MCCounter]<-NumberOfES1[MCCounter]
+  H3[MCCounter]<-NumberOfES1[MCCounter]
+  H4[MCCounter]<-NumberOfS2[MCCounter]*NumberOfE2[MCCounter]
+  H5[MCCounter]<-NumberOfES2[MCCounter]
+  H6[MCCounter]<-NumberOfES2[MCCounter]
+  H7[MCCounter]<-NumberOfS3[MCCounter]*NumberOfE3[MCCounter]
+  H8[MCCounter]<-NumberOfES3[MCCounter]
+  H9[MCCounter]<-NumberOfES3[MCCounter]
+  H10[MCCounter]<-NumberOfS4[MCCounter]*NumberOfE4[MCCounter]
+  H11[MCCounter]<-NumberOfES4[MCCounter]
+  H12[MCCounter]<-NumberOfES4[MCCounter]
+
+  A1[MCCounter]<-H1[MCCounter]*C1
+  A2[MCCounter]<-H2[MCCounter]*C2
+  A3[MCCounter]<-H3[MCCounter]*C3
+  A4[MCCounter]<-H4[MCCounter]*C4
+  A5[MCCounter]<-H5[MCCounter]*C5
+  A6[MCCounter]<-H6[MCCounter]*C6
+  A7[MCCounter]<-H7[MCCounter]*C7
+  A8[MCCounter]<-H8[MCCounter]*C8
+  A9[MCCounter]<-H9[MCCounter]*C9
+  A10[MCCounter]<-H10[MCCounter]*C10
+  A11[MCCounter]<-H11[MCCounter]*C11
+  A12[MCCounter]<-H12[MCCounter]*C12
+
+  A0[MCCounter]<-sum(A1[MCCounter],A2[MCCounter],A3[MCCounter],A4[MCCounter],A5[MCCounter],A6[MCCounter],A7[MCCounter],A8[MCCounter],A9[MCCounter],A10[MCCounter],A11[MCCounter],A12[MCCounter])
+
+  #The counts of each of the compounds in the next step are constant unless a pathway corresponding to changes is selected in the next step.
+  NumberOfS1[MCCounter+1]<-NumberOfS1[MCCounter]   # I have questions about this statement and the comment that was made above
+  NumberOfS2[MCCounter+1]<-NumberOfS2[MCCounter]
+  NumberOfS3[MCCounter+1]<-NumberOfS3[MCCounter]
+  NumberOfS4[MCCounter+1]<-NumberOfS4[MCCounter]
+  NumberOfS5[MCCounter+1]<-NumberOfS5[MCCounter]
+
+  NumberOfE1[MCCounter+1]<-NumberOfE1[MCCounter]
+  NumberOfE2[MCCounter+1]<-NumberOfE2[MCCounter]
+  NumberOfE3[MCCounter+1]<-NumberOfE3[MCCounter]
+  NumberOfE4[MCCounter+1]<-NumberOfE4[MCCounter]
+
+  NumberOfES1[MCCounter+1]<-NumberOfES1[MCCounter]
+  NumberOfES2[MCCounter+1]<-NumberOfES2[MCCounter]
+  NumberOfES3[MCCounter+1]<-NumberOfES3[MCCounter]
+  NumberOfES4[MCCounter+1]<-NumberOfES4[MCCounter]
+
+#The next step is to select the time till next reaction, as well as the next reaction that occurs.
+
+  r1<-runif(1,min=0,max=1)
+  r2<-runif(1,min=0,max=1)
+  Tau<-(1/A0[MCCounter])*log(1/r1)
+  MuObject<-r2*A0[MCCounter]
+#The code below makes the slider object pictured in the notes, and is used to determine that value of mu based on the sampled value of r2.
+  A1Reference<-A1[MCCounter]
+  A2Reference<-A1[MCCounter]+A2[MCCounter]
+  A3Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]
+  A4Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]
+  A5Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]
+  A6Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]
+  A7Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]
+  A8Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]+A8[MCCounter]
+  A9Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]+A8[MCCounter]+A9[MCCounter]
+  A10Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]+A8[MCCounter]+A9[MCCounter]+A10[MCCounter]
+  A11Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]+A8[MCCounter]+A9[MCCounter]+A10[MCCounter]+A11[MCCounter]
+  A12Reference<-A1[MCCounter]+A2[MCCounter]+A3[MCCounter]+A4[MCCounter]+A5[MCCounter]+A6[MCCounter]+A7[MCCounter]+A8[MCCounter]+A9[MCCounter]+A10[MCCounter]+A11[MCCounter]+A12[MCCounter]
+
+  if(MuObject<A1Reference){Mu<-1}
+  if(MuObject>A1Reference&&MuObject<A2Reference){Mu<-2}
+  if(MuObject>A2Reference&&MuObject<A3Reference){Mu<-3}
+  if(MuObject>A3Reference&&MuObject<A4Reference){Mu<-4}
+  if(MuObject>A4Reference&&MuObject<A5Reference){Mu<-5}
+  if(MuObject>A5Reference&&MuObject<A6Reference){Mu<-6}
+  if(MuObject>A6Reference&&MuObject<A7Reference){Mu<-7}
+  if(MuObject>A7Reference&&MuObject<A8Reference){Mu<-8}
+  if(MuObject>A8Reference&&MuObject<A9Reference){Mu<-9}
+  if(MuObject>A9Reference&&MuObject<A10Reference){Mu<-10}
+  if(MuObject>A10Reference&&MuObject<A11Reference){Mu<-11}
+  if(MuObject>A11Reference&&MuObject<A12Reference){Mu<-12}
+
+  if(Mu==1){
+    NumberOfE1[MCCounter+1]<-NumberOfE1[MCCounter]-1
+    NumberOfS1[MCCounter+1]<-NumberOfS1[MCCounter]-1
+    NumberOfES1[MCCounter+1]<-NumberOfES1[MCCounter]+1
+  }
+
+  if(Mu==2){
+    NumberOfES1[MCCounter+1]<-NumberOfES1[MCCounter]-1
+    NumberOfE1[MCCounter+1]<-NumberOfE1[MCCounter]+1
+    NumberOfS1[MCCounter+1]<-NumberOfS1[MCCounter]+1
+  }
+
+
+  if(Mu==3){
+    NumberOfES1[MCCounter+1]<-NumberOfES1[MCCounter]-1
+    NumberOfE1[MCCounter+1]<-NumberOfE1[MCCounter]+1
+    NumberOfS2[MCCounter+1]<-NumberOfS2[MCCounter]+1
+  }
+
+  if(Mu==4){
+    NumberOfE2[MCCounter+1]<-NumberOfE2[MCCounter]-1
+    NumberOfS2[MCCounter+1]<-NumberOfS2[MCCounter]-1
+    NumberOfES2[MCCounter+1]<-NumberOfES2[MCCounter]+1
+  }
+
+  if(Mu==5){
+    NumberOfES2[MCCounter+1]<-NumberOfES2[MCCounter]-1
+    NumberOfE2[MCCounter+1]<-NumberOfE2[MCCounter]+1
+    NumberOfS2[MCCounter+1]<-NumberOfS2[MCCounter]+1
+  }
+
+
+
+  if(Mu==6){
+    NumberOfES2[MCCounter+1]<-NumberOfES2[MCCounter]-1
+    NumberOfE2[MCCounter+1]<-NumberOfE2[MCCounter]+1
+    NumberOfS3[MCCounter+1]<-NumberOfS3[MCCounter]+1
+  }
+
+  if(Mu==7){
+    NumberOfE3[MCCounter+1]<-NumberOfE3[MCCounter]-1
+    NumberOfS3[MCCounter+1]<-NumberOfS3[MCCounter]-1
+    NumberOfES3[MCCounter+1]<-NumberOfES3[MCCounter]+1
+  }
+
+  if(Mu==8){
+    NumberOfES3[MCCounter+1]<-NumberOfES3[MCCounter]-1
+    NumberOfE3[MCCounter+1]<-NumberOfE3[MCCounter]+1
+    NumberOfS3[MCCounter+1]<-NumberOfS3[MCCounter]+1
+  }
+
+
+  if(Mu==9){
+    NumberOfES3[MCCounter+1]<-NumberOfES3[MCCounter]-1
+    NumberOfE3[MCCounter+1]<-NumberOfE3[MCCounter]+1
+    NumberOfS4[MCCounter+1]<-NumberOfS4[MCCounter]+1
+  }
+
+  if(Mu==10){
+    NumberOfE4[MCCounter+1]<-NumberOfE4[MCCounter]-1
+    NumberOfS4[MCCounter+1]<-NumberOfS4[MCCounter]-1
+    NumberOfES4[MCCounter+1]<-NumberOfES4[MCCounter]+1
+  }
+
+  if(Mu==11){
+    NumberOfES4[MCCounter+1]<-NumberOfES4[MCCounter]-1
+    NumberOfE4[MCCounter+1]<-NumberOfE4[MCCounter]+1
+    NumberOfS4[MCCounter+1]<-NumberOfS4[MCCounter]+1
+  }
+
+  if(Mu==12){
+    NumberOfES4[MCCounter+1]<-NumberOfES4[MCCounter]-1
+    NumberOfE4[MCCounter+1]<-NumberOfE4[MCCounter]+1
+    NumberOfS5[MCCounter+1]<-NumberOfS5[MCCounter]+1
+  }
+
+
+  MCTime[MCCounter+1]<-MCTime[MCCounter]+Tau
+
+
+  if(MCCounter==NumberOfSteps){break}
+}
+
+
+plot(MCTime,NumberOfS1,type="l",col=rainbow[1],xlab="Time",ylab="Substrate Concentration",main="Substrate Concentrations Over Time",ylim = c(-2,NumberOfS1[1]))
+lines(MCTime,NumberOfS2,col=rainbow[2])
+lines(MCTime,NumberOfS3,col=rainbow[3])
+lines(MCTime,NumberOfS4,col=rainbow[4])
+lines(MCTime,NumberOfS5,col=rainbow[5])
+legend("bottomright",legend=c("S1","S2","S3","S4","S5"),col=rainbow,title="Compounds",lty=1,cex=.8)
+
+
+```
